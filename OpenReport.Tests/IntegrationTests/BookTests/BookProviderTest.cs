@@ -41,9 +41,10 @@ namespace OpenReport.Tests.IntegrationTests.BookTests
 
             sheets.Should().NotBeNull();
 
-            sheets.Rows.Should().ContainSingle(r => r.RowIndex == rowIndex && r.Fields.Any(f => f.CellAddress == fieldAddress && f.Style.IsMerged == isMerged && f.FieldValue == fiedValue));
+            sheets.Rows.Should().ContainSingle(r => r.RowIndex == rowIndex && r.Fields.Any(f => f.CellAddress == fieldAddress && f.Style.IsMerged == isMerged && f.OriginalValue == fiedValue));
             sheets.Rows.Should().HaveCount(11);
             sheets.Rows.Where(x => x.Fields.Count == 3).Should().HaveCount(11);
+            sheets.Variables.Should().HaveCount(7);
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,45 +25,36 @@ namespace OpenReport.Core
             throw new InvalidOperationException();
         }
 
-        public IEnumerable<ISheet> Sheets { get; protected set; }
+        public List<ISheet> Sheets { get; protected set; }
 
-        public async ValueTask<byte[]> BuildReport(int maxDegreeOfParallelism, CancellationToken cancellationToken)
+        public async ValueTask<byte[]> BuildReport(int tasksCount, CancellationToken cancellationToken)
         {
             var parallelOptions = new ParallelOptions() 
             { 
                 CancellationToken = cancellationToken,
-                MaxDegreeOfParallelism = maxDegreeOfParallelism,
+                MaxDegreeOfParallelism = tasksCount,
             };
 
-            Parallel.ForEach(this.Sheets, parallelOptions, async sheet => 
+            Parallel.ForEach(this.Sheets, parallelOptions, async sheet =>
             {
-                //var sheetBuilder = await this._bookProvider.SheetBuilderCreate(sheet.Name);
-                //var fieldList = sheet.Fields.OrderBy(sht => sht.RowPos);
-
-                //foreach (var field in fieldList)
-                //{
-                //    if (field.FieldType.Equals(FieldType.repeatGroup))
-                //    {
-                //        var values = field.FieldValue as IRepeatGroup;
-                //        uint linesToInsert = await this.GetCountLinesToInsert(values);
-
-                //        await this.InsertLinesBellow(values.EndRow, linesToInsert, sheet);
-
-                //        await this.SetValue(values, sheet);
-                //    }
-                //    else
-                //    {
-                //        await this.SetValue(field, sheet);
-                //    }
-                //}
+                foreach (var variable in sheet.Variables)
+                {
+                    this._bookProvider.set
+                }
             });
 
             return await this._bookProvider.GetBuildedReport();
         }
 
-        private Task SetValue(IField field, ISheet sheet)
+        public async ValueTask SetValue(string variableName, string value, string sheetName)
         {
-            throw new NotImplementedException();
+            var sheet = this.Sheets.FirstOrDefault(s => s.Name.ToLower() == sheetName.ToLower()) ?? throw new ArgumentNullException($"Sheet not found to {sheetName}");
+            Func<IVariableField, bool> expression = (v) => v.FieldName.ToLower() == variableName;
+            var variable = sheet.Variables.FirstOrDefault(expression) ?? throw new ArgumentNullException($"Variable not found to {variableName}");
+
+            variable.Values.Add(new FieldValues(variable.Values.Count + 1, value));
+
+            await ValueTask.CompletedTask;
         }
 
         private Task SetValue(IRepeatGroup values, ISheet sheet)
@@ -98,44 +90,13 @@ namespace OpenReport.Core
 
         protected virtual async ValueTask OnConstructor()
         {
-            string[] sheetNameList = this._bookProvider.GetSheetList();
+            var sheets = this._bookProvider.GetSheetList();
+            this.Sheets = new List<ISheet>();
 
-            foreach (var sheetName in sheetNameList)
+            foreach (var sheet in sheets)
             {
-                //IEnumerable<(string cellAddress, string variableName)> variableList = this._bookProvider.GetVariableList(sheetName);
-
-                //var sheet = new OpenSheet(sheetName);
-                //sheet.Rows.AddRange();
-                //this.Sheets.Append()
-                //{
-                //    Fields = await this.GetFields(variableList, sheetName)
-                //}) ;
+                this.Sheets.Add(await this._bookProvider.GetSheetFrom(sheet));
             }
-        }
-
-        protected async ValueTask<IEnumerable<IField>> GetFields(IEnumerable<(string cellAddress, string variableName)> variableList, string sheetName)
-        {
-            var fields = new List<IField>();
-
-            foreach (var cellInfo in variableList)
-            {
-                IField field = new OpenField(cellInfo.cellAddress, cellInfo.variableName)
-                {
-                    FieldValue = await this._bookProvider.GetFieldValueTo(cellInfo.cellAddress, cellInfo.variableName, sheetName),
-                    Style = await this._bookProvider.GetFieldStyleTo(cellInfo.cellAddress, cellInfo.variableName, sheetName),
-                    Formula = await this._bookProvider.GetFormulaTo(cellInfo.cellAddress, cellInfo.variableName, sheetName),
-                    FieldType = await this._bookProvider.GetFieldType(cellInfo.cellAddress, cellInfo.variableName, sheetName),
-                };
-
-                if (field.FieldType.Equals(FieldType.repeatGroup) && !field.FieldValue.GetType().Equals(typeof(IRepeatGroup)))
-                {
-                    throw new InvalidOperationException($"Please use a IRepeatGroup to FieldValue when use FieldType equals repeatGroup.");
-                }
-
-                fields.Add(field);
-            }
-
-            return await ValueTask.FromResult(fields);
         }
     }
 }

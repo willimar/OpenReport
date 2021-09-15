@@ -94,14 +94,14 @@ namespace OpenXml.Provider
             return sheets.ToArray();
         }
 
-        public async ValueTask<IEnumerable<IField>> GetVariableList(string sheetName)
+        public async ValueTask<IEnumerable<IVariableField>> GetVariableList(ISheet sheet)
         {
-            var result = new List<IField>();
-            var sheet = await this.GetSheetFrom(sheetName);
+            var result = new List<IVariableField>();
 
             foreach (var row in sheet.Rows.Where(r => r.Fields.Any(f => f.IsVariable)))
             {
-                result.AddRange(row.Fields.Where(f => f.IsVariable));
+                var fields = row.Fields.Where(f => f.IsVariable).Select(f => new VariableField(f));
+                result.AddRange(fields);
             }
 
             return await ValueTask.FromResult(result);
@@ -132,6 +132,7 @@ namespace OpenXml.Provider
             var sheet = new OpenSheet(sheetName);
 
             sheet.Rows.AddRange(this.GetRowsFrom(workSheetPart, workbookPart));
+            sheet.Variables.AddRange(await this.GetVariableList(sheet));
 
             return await ValueTask.FromResult(sheet);
         }
@@ -173,7 +174,7 @@ namespace OpenXml.Provider
                     MergeCells = mergedCellsAddress,
                 };
 
-                fields.Add(field);                
+                fields.Add(field);
             }
 
             return fields;

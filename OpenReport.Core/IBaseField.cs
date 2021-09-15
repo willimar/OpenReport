@@ -6,7 +6,7 @@
         uint ColPos { get; }
         uint RowPos { get; }
         string FieldName { get; }
-        string FieldValue { get; set; }
+        string OriginalValue { get; }
         object Formula { get; set; }
         IStyle Style { get; set; }
         bool IsVariable { get; }

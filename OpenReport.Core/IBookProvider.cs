@@ -9,7 +9,6 @@ namespace OpenReport.Core
     public interface IBookProvider
     {
         string[] GetSheetList();
-        ValueTask<IEnumerable<IField>> GetVariableList(string sheetName);
         ValueTask<string> GetFieldValueTo(string cellAddress, string variableName, string sheetName);
         ValueTask<IStyle> GetFieldStyleTo(string cellAddress, string variableName, string sheetName);
         ValueTask<object> GetFormulaTo(string cellAddress, string variableName, string sheetName);

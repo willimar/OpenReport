@@ -14,6 +14,22 @@ namespace OpenReport.Core
 
     public interface IField : IBaseField
     {
-        FieldType FieldType { get; set; }
+    }
+
+    public class FieldValues
+    {
+        public FieldValues(int order, string value)
+        {
+            this.Order = order;
+            this.Value = value;
+        }
+
+        public int Order { get; }
+        public string Value { get; }
+    }
+
+    public interface IVariableField : IField
+    {
+        ICollection<FieldValues> Values { get; }
     }
 }

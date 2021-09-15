@@ -14,7 +14,7 @@ namespace OpenReport.Core.Concrets
         public OpenField(string cellAddress, string fieldValue)
         {
             this.CellAddress = cellAddress;
-            this.FieldValue = fieldValue;
+            this.OriginalValue = fieldValue;
 
             this._variableFormat = @"\${([a-zA-Z._]+)}";
 
@@ -38,11 +38,10 @@ namespace OpenReport.Core.Concrets
         public uint ColPos { get; private set; }
         public uint RowPos { get; private set; }
         public string FieldName { get; private set; }
-        public string FieldValue { get; set; }
+        public string OriginalValue { get; private set; }
         public object Formula { get; set; }
         public IStyle Style { get; set; }
-        public FieldType FieldType { get; set; }
-        public bool IsVariable { get; private set; }        
+        public bool IsVariable { get; private set; }
 
         public (uint colPos, uint rowPos, bool isVariable) GetAddressInfo(string address, string value)
         {
@@ -114,5 +113,18 @@ namespace OpenReport.Core.Concrets
 
             return match.Groups[1].Value;
         }
+    }
+
+    public class VariableField : OpenField, IVariableField
+    {
+        public VariableField(IField field): base(field.CellAddress, field.OriginalValue)
+        {
+            this.Formula = field.Formula;
+            this.Style = field.Style;
+
+            Values = new List<FieldValues>();
+        }
+
+        public ICollection<FieldValues> Values { get; private set; }
     }
 }

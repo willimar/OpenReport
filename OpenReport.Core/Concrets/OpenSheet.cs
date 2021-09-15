@@ -12,9 +12,11 @@ namespace OpenReport.Core.Concrets
         {
             this.Name = name;
             this.Rows = new List<IRow>();
+            this.Variables = new List<IVariableField>();
         }
 
         public string Name { get; }
         public List<IRow> Rows { get; }
+        public List<IVariableField> Variables { get; }
     }
 }

@@ -11,5 +11,6 @@ namespace OpenReport.Core
         string Name { get; }
 
         List<IRow> Rows { get; }
+        List<IVariableField> Variables { get; }
     }
 }
