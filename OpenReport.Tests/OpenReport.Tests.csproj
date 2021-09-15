@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Npoi.Provider\Npoi.Provider.csproj" />
     <ProjectReference Include="..\OpenReport.Core\OpenReport.Core.csproj" />
+    <ProjectReference Include="..\OpenXml.Provider\OpenXml.Provider.csproj" />
   </ItemGroup>
 
   <ItemGroup>

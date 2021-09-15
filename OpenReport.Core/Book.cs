@@ -36,25 +36,25 @@ namespace OpenReport.Core
 
             Parallel.ForEach(this.Sheets, parallelOptions, async sheet => 
             {
-                var sheetBuilder = await this._bookProvider.SheetBuilderCreate(sheet.Name);
-                var fieldList = sheet.Fields.OrderBy(sht => sht.RowPos);
+                //var sheetBuilder = await this._bookProvider.SheetBuilderCreate(sheet.Name);
+                //var fieldList = sheet.Fields.OrderBy(sht => sht.RowPos);
 
-                foreach (var field in fieldList)
-                {
-                    if (field.FieldType.Equals(FieldType.repeatGroup))
-                    {
-                        var values = field.FieldValue as IRepeatGroup;
-                        uint linesToInsert = await this.GetCountLinesToInsert(values);
+                //foreach (var field in fieldList)
+                //{
+                //    if (field.FieldType.Equals(FieldType.repeatGroup))
+                //    {
+                //        var values = field.FieldValue as IRepeatGroup;
+                //        uint linesToInsert = await this.GetCountLinesToInsert(values);
 
-                        await this.InsertLinesBellow(values.EndRow, linesToInsert, sheet);
+                //        await this.InsertLinesBellow(values.EndRow, linesToInsert, sheet);
 
-                        await this.SetValue(values, sheet);
-                    }
-                    else
-                    {
-                        await this.SetValue(field, sheet);
-                    }
-                }
+                //        await this.SetValue(values, sheet);
+                //    }
+                //    else
+                //    {
+                //        await this.SetValue(field, sheet);
+                //    }
+                //}
             });
 
             return await this._bookProvider.GetBuildedReport();
@@ -102,12 +102,14 @@ namespace OpenReport.Core
 
             foreach (var sheetName in sheetNameList)
             {
-                IEnumerable<(string cellAddress, string variableName)> variableList = this._bookProvider.GetVariableList(sheetName);
+                //IEnumerable<(string cellAddress, string variableName)> variableList = this._bookProvider.GetVariableList(sheetName);
 
-                this.Sheets.Append(new Sheet() { 
-                    Name = sheetName,
-                    Fields = await this.GetFields(variableList, sheetName)
-                });
+                //var sheet = new OpenSheet(sheetName);
+                //sheet.Rows.AddRange();
+                //this.Sheets.Append()
+                //{
+                //    Fields = await this.GetFields(variableList, sheetName)
+                //}) ;
             }
         }
 
@@ -117,7 +119,7 @@ namespace OpenReport.Core
 
             foreach (var cellInfo in variableList)
             {
-                IField field = new Field(cellInfo.cellAddress, cellInfo.variableName)
+                IField field = new OpenField(cellInfo.cellAddress, cellInfo.variableName)
                 {
                     FieldValue = await this._bookProvider.GetFieldValueTo(cellInfo.cellAddress, cellInfo.variableName, sheetName),
                     Style = await this._bookProvider.GetFieldStyleTo(cellInfo.cellAddress, cellInfo.variableName, sheetName),

@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenReport.Core", "OpenRepo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenReport.Tests", "OpenReport.Tests\OpenReport.Tests.csproj", "{589B2BD7-7AAD-4A2F-A4B6-35FE19DA3593}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenXml.Provider", "OpenXml.Provider\OpenXml.Provider.csproj", "{037231FA-0302-4FBE-A569-921B42C674FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{589B2BD7-7AAD-4A2F-A4B6-35FE19DA3593}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{589B2BD7-7AAD-4A2F-A4B6-35FE19DA3593}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{589B2BD7-7AAD-4A2F-A4B6-35FE19DA3593}.Release|Any CPU.Build.0 = Release|Any CPU
+		{037231FA-0302-4FBE-A569-921B42C674FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{037231FA-0302-4FBE-A569-921B42C674FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{037231FA-0302-4FBE-A569-921B42C674FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{037231FA-0302-4FBE-A569-921B42C674FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

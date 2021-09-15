@@ -7,32 +7,44 @@ using System.Threading.Tasks;
 
 namespace OpenReport.Core.Concrets
 {
-    internal class Field : IField
+    public class OpenField : IField
     {
-        public Field(string cellAddress, string variableName)
+        private readonly string _variableFormat;
+
+        public OpenField(string cellAddress, string fieldValue)
         {
             this.CellAddress = cellAddress;
-            this.VariableName = variableName;
-            
-            (uint colPos, uint rowPos) addressInfo = Field.GetAddressInfo(cellAddress);
+            this.FieldValue = fieldValue;
+
+            this._variableFormat = @"\${([a-zA-Z._]+)}";
+
+            var addressInfo = this.GetAddressInfo(cellAddress, fieldValue);
 
             this.RowPos = addressInfo.rowPos;
             this.ColPos = addressInfo.colPos;
-            this.VariableFormat = @"\${([a-zA-Z._]+)}";
+            this.IsVariable = addressInfo.isVariable;
+
+            if (this.IsVariable)
+            {
+                this.FieldName = this.GetFieldName(fieldValue);
+            }
+            else
+            {
+                this.FieldName = $"field{cellAddress}";
+            }
         }
 
         public string CellAddress { get; private set; }
         public uint ColPos { get; private set; }
         public uint RowPos { get; private set; }
-        public string VariableName { get; private set; }
-        public string VariableFormat { get; set; }
-        public string FieldName { get { return this.GetFieldName(); } }
-        public object FieldValue { get; set; }
+        public string FieldName { get; private set; }
+        public string FieldValue { get; set; }
         public object Formula { get; set; }
         public IStyle Style { get; set; }
         public FieldType FieldType { get; set; }
+        public bool IsVariable { get; private set; }        
 
-        public static (uint colPos, uint rowPos) GetAddressInfo(string address)
+        public (uint colPos, uint rowPos, bool isVariable) GetAddressInfo(string address, string value)
         {
             var regex = new Regex("([a-zA-Z]+)([0-9]+)");
             var match = regex.Match(address);
@@ -42,9 +54,23 @@ namespace OpenReport.Core.Concrets
                 throw new ArgumentException($"Invalid address to {address}.");
             }
 
-            uint colPos = Field.GetColPos(match.Groups[1].Value);
+            uint colPos = OpenField.GetColPos(match.Groups[1].Value);
             uint rowPos = Convert.ToUInt32(match.Groups[2].Value);
-            return (colPos, rowPos);
+            bool isVariable = IsVariableCheck(value);
+            return (colPos, rowPos, isVariable);
+        }
+
+        private bool IsVariableCheck(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return false;
+            }
+
+            var regex = new Regex(this._variableFormat);
+            var match = regex.Match(value);
+
+            return match.Success;
         }
 
         public static uint GetColPos(string address)
@@ -71,15 +97,15 @@ namespace OpenReport.Core.Concrets
             return sum;
         }
 
-        private string GetFieldName()
+        private string GetFieldName(string value)
         {
-            if (string.IsNullOrEmpty(this.VariableFormat) || string.IsNullOrEmpty(this.VariableName))
+            if (string.IsNullOrEmpty(this._variableFormat) || string.IsNullOrEmpty(value))
             {
                 return string.Empty;
             }
 
-            var regex = new Regex(this.VariableFormat);
-            var match = regex.Match(this.VariableName);
+            var regex = new Regex(this._variableFormat);
+            var match = regex.Match(value);
 
             if (!match.Success || match.Groups.Count != 2)
             {

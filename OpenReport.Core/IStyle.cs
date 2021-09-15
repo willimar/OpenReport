@@ -4,8 +4,8 @@ namespace OpenReport.Core
 {
     public interface IStyle
     {
-        uint StyleIndex { get; set; }
-        Font Font { get; set; }
+        int StyleIndex { get; set; }
+        bool IsMerged { get; set; }
         string MergeCells { get; set; }
     }
 }

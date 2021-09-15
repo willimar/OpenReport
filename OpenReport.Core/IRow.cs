@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace OpenReport.Core
 {
-    public interface ISheet
+    public interface IRow
     {
-        string Name { get; }
-
-        List<IRow> Rows { get; }
+        public List<IField> Fields { get; }
+        public int RowIndex { get; }
     }
 }
